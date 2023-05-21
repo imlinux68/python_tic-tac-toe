@@ -1,0 +1,43 @@
+version: '3'
+services:
+  mongodb:
+    image: mongo
+    ports:
+      - '27017:27017'
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=root
+  mongo-express:
+    image: mongo-express
+    ports:
+      - '8081:8081'
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=root
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+    depends_on:
+      - "mongodb"
+    restart: unless-stopped
+  mysql:
+    build: ./mysql/
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'game_score'
+      MYSQL_ROOT_PASSWORD: 'root'
+    ports:
+      - '3306:3306'
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - '8080:8080'
+  pythonapp:
+    build: ./python/
+    command: sh -c "sleep 10s ; python3 ./game.py"
+    depends_on:
+      - "mysql"
+      - "mongodb"
+    restart: always
+    stdin_open: true 
+    tty: true
