@@ -1,0 +1,4 @@
+termcolor
+tqdm
+mysql-connector-python
+pymongo
